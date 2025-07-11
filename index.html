@@ -581,37 +581,114 @@
             const whatsappButton = document.getElementById('whatsapp-button');
             const vkButton = document.getElementById('vk-button');
             
-            // Показываем элементы при наведении
-            contactBtn.addEventListener('mouseenter', function() {
-                hideAllPanels();
-                contactForm.classList.add('active');
-            });
+            // Переменная для отслеживания активной панели
+            let activePanel = null;
             
-            telegramBtn.addEventListener('mouseenter', function() {
-                hideAllPanels();
-                telegramButton.classList.add('active');
-            });
+            // Функция для скрытия всех панелей
+            function hideAllPanels() {
+                contactForm.classList.remove('active');
+                telegramButton.classList.remove('active');
+                whatsappButton.classList.remove('active');
+                vkButton.classList.remove('active');
+                activePanel = null;
+            }
             
-            whatsappBtn.addEventListener('mouseenter', function() {
-                hideAllPanels();
-                whatsappButton.classList.add('active');
-            });
+            // Функция для проверки, является ли элемент или его потомки активными
+            function isPanelActive(panel) {
+                return panel.classList.contains('active');
+            }
             
-            vkBtn.addEventListener('mouseenter', function() {
-                hideAllPanels();
-                vkButton.classList.add('active');
-            });
-            
-            // Скрываем при уходе курсора
-            [contactForm, telegramButton, whatsappButton, vkButton].forEach(element => {
-                element.addEventListener('mouseleave', function() {
-                    setTimeout(() => {
-                        if (!isHoveringAnyButton()) {
-                            hideAllPanels();
-                        }
-                    }, 300);
+            // Обработчики для десктопов (mouseenter/mouseleave)
+            if (window.matchMedia("(hover: hover)").matches) {
+                contactBtn.addEventListener('mouseenter', function() {
+                    hideAllPanels();
+                    contactForm.classList.add('active');
+                    activePanel = contactForm;
                 });
-            });
+                
+                telegramBtn.addEventListener('mouseenter', function() {
+                    hideAllPanels();
+                    telegramButton.classList.add('active');
+                    activePanel = telegramButton;
+                });
+                
+                whatsappBtn.addEventListener('mouseenter', function() {
+                    hideAllPanels();
+                    whatsappButton.classList.add('active');
+                    activePanel = whatsappButton;
+                });
+                
+                vkBtn.addEventListener('mouseenter', function() {
+                    hideAllPanels();
+                    vkButton.classList.add('active');
+                    activePanel = vkButton;
+                });
+                
+                [contactForm, telegramButton, whatsappButton, vkButton].forEach(element => {
+                    element.addEventListener('mouseleave', function() {
+                        setTimeout(() => {
+                            if (!isHoveringAnyButton() && activePanel === this) {
+                                hideAllPanels();
+                            }
+                        }, 300);
+                    });
+                });
+            }
+            
+            // Обработчики для мобильных устройств (click)
+            if (window.matchMedia("(hover: none)").matches) {
+                contactBtn.addEventListener('click', function() {
+                    if (isPanelActive(contactForm)) {
+                        hideAllPanels();
+                    } else {
+                        hideAllPanels();
+                        contactForm.classList.add('active');
+                        activePanel = contactForm;
+                    }
+                });
+                
+                telegramBtn.addEventListener('click', function() {
+                    if (isPanelActive(telegramButton)) {
+                        hideAllPanels();
+                    } else {
+                        hideAllPanels();
+                        telegramButton.classList.add('active');
+                        activePanel = telegramButton;
+                    }
+                });
+                
+                whatsappBtn.addEventListener('click', function() {
+                    if (isPanelActive(whatsappButton)) {
+                        hideAllPanels();
+                    } else {
+                        hideAllPanels();
+                        whatsappButton.classList.add('active');
+                        activePanel = whatsappButton;
+                    }
+                });
+                
+                vkBtn.addEventListener('click', function() {
+                    if (isPanelActive(vkButton)) {
+                        hideAllPanels();
+                    } else {
+                        hideAllPanels();
+                        vkButton.classList.add('active');
+                        activePanel = vkButton;
+                    }
+                });
+                
+                // Закрытие при клике вне панели
+                document.addEventListener('click', function(e) {
+                    if (activePanel && 
+                        !activePanel.contains(e.target) && 
+                        !contactBtn.contains(e.target) && 
+                        !telegramBtn.contains(e.target) && 
+                        !whatsappBtn.contains(e.target) && 
+                        !vkBtn.contains(e.target)) {
+                        hideAllPanels();
+                    }
+                });
+            }
             
             // Отправка формы
             const submitForm = document.getElementById('submit-form');
@@ -651,11 +728,7 @@
                     // Скрываем уведомление через 3 секунды
                     setTimeout(() => {
                         notification.classList.remove('active');
-                    hideAllPanels();
-                    contactForm.classList.remove('active');
-                    telegramButton.classList.remove('active');
-                        whatsappButton.classList.remove('active');
-                        vkButton.classList.remove('active');
+                        hideAllPanels();
                     }, 3000);
                 })
                 .catch(error => {
@@ -664,14 +737,7 @@
                 });
             });
             
-            // Вспомогательные функции
-            function hideAllPanels() {
-                contactForm.classList.remove('active');
-                telegramButton.classList.remove('active');
-                whatsappButton.classList.remove('active');
-                vkButton.classList.remove('active');
-            }
-            
+            // Вспомогательная функция для проверки наведения на кнопки
             function isHoveringAnyButton() {
                 return contactBtn.matches(':hover') || 
                        telegramBtn.matches(':hover') || 
